@@ -1,3 +1,4 @@
+#Terraform block
 terraform {
   required_providers {
     aws = {
@@ -6,14 +7,15 @@ terraform {
     }
   }
 }
+#AWS provider
 provider "aws" {
-  region  = "us-east-2"
+  region  = "us-southeast-2"
   version = "~> 2.46"
 }
 
 //HTTP server --> SG
 //SG --> 80 TCP, 22 TCP, CIDR ["0.0.0.0/0"]
-
+#VPC Creation
 resource "aws_vpc" "main" {
   cidr_block       = "10.0.0.0/16"
   instance_tenancy = "default"
@@ -23,6 +25,7 @@ resource "aws_vpc" "main" {
   }
 }
 
+#Subnets Creation
 resource "aws_subnet" "web-public-subnet1" {
   vpc_id     = aws_vpc.main.id
   cidr_block = "10.0.1.0/24"
@@ -82,7 +85,7 @@ resource "aws_internet_gateway" "igw" {
   }
 }
 
-#Route Table 
+#Route Tables
 
 resource "aws_route_table" "web-route-table" {
   vpc_id = aws_vpc.main.id
@@ -113,7 +116,7 @@ resource "aws_route_table_association" "b" {
 resource "aws_instance" "web-server-1" {
   ami                    = "ami-067d1e60475437da2"
   instance_type          = "t2.micro"
-  availability_zone      = "us-east-2a"
+  availability_zone      = "us-southeast-2a"
   vpc_security_group_ids = [aws_security_group.web-sg.id]
   subnet_id              = aws_subnet.web-public-subnet1.id
   
@@ -127,7 +130,7 @@ resource "aws_instance" "web-server-1" {
 resource "aws_instance" "web-server-2" {
   ami                    = "ami-067d1e60475437da2"
   instance_type          = "t2.micro"
-  availability_zone      = "us-east-2b"
+  availability_zone      = "us-us-southeast-2b"
   vpc_security_group_ids = [aws_security_group.web-sg.id]
   subnet_id              = aws_subnet.web-public-subnet2.id
   
@@ -143,7 +146,7 @@ resource "aws_instance" "web-server-2" {
 resource "aws_instance" "app-server-1" {
   ami                    = "ami-067d1e60475437da2"
   instance_type          = "t2.micro"
-  availability_zone      = "us-east-2a"
+  availability_zone      = "us-southeast-2a"
   vpc_security_group_ids = [aws_security_group.app-sg.id]
   subnet_id              = aws_subnet.app-private-subnet1.id
  
@@ -157,7 +160,7 @@ resource "aws_instance" "app-server-1" {
 resource "aws_instance" "app-server-2" {
   ami                    = "ami-067d1e60475437da2"
   instance_type          = "t2.micro"
-  availability_zone      = "us-east-2b"
+  availability_zone      = "us-southeast-2b"
   vpc_security_group_ids = [aws_security_group.app-sg.id]
   subnet_id              = aws_subnet.app-private-subnet2.id
   
